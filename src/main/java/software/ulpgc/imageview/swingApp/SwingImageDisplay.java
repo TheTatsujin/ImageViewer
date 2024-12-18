@@ -24,6 +24,11 @@ public class SwingImageDisplay extends JPanel implements ImageDisplay {
     public void paint(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, getWidth(), getHeight());
-        g.drawImage(image.content(), 0, 0, getWidth(), getHeight(), null);
+        g.drawImage(image.content(), 50, 50, getWidth()-100, getHeight()-50, null);
     }
+
+    private int fitToResolution(Image image) {
+        return 0;
+    }
+
 }

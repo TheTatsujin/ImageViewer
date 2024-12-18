@@ -8,12 +8,16 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FileImageLoader implements ImageLoader {
     private final File[] files;
+    private final Map<File, BufferedImage> memory;
 
     public FileImageLoader(File directory) {
         this.files = directory.listFiles(isImage());
+        this.memory = new HashMap<>();
     }
 
     private static FilenameFilter isImage(){
@@ -42,7 +46,7 @@ public class FileImageLoader implements ImageLoader {
     }
 
     private Image getImage(int index) {
-        BufferedImage image = getImageContent(files[index]);
+        BufferedImage image = memory.computeIfAbsent(files[index], this::getImageContent);
         return new Image() {
             @Override
             public String name() {
