@@ -3,7 +3,7 @@ package software.ulpgc.imageview.core.model;
 import java.awt.image.BufferedImage;
 
 public interface ImageDisplay {
-    void paint(int offsetWidth, int offsetHeight, int width, int height, int shiftOffset, BufferedImage content);
+    void paint(int width, int height, int shiftOffset, BufferedImage content);
     void clear();
     void on(Shift shift);
     void on(Release release);

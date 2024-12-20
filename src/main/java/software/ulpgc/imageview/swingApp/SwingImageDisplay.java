@@ -28,7 +28,8 @@ public class SwingImageDisplay extends JPanel implements ImageDisplay {
         g.fillRect(0, 0, getWidth(), getHeight());
 
         Paint paint = paintQueue.getFirst();
-        g.drawImage(paint.content, paint.offsetWidth + paint.shiftOffset, paint.offsetHeight, null);
+        g.drawImage(paint.content, paint.offsetWidth + paint.shiftOffset, paint.offsetHeight, paint.width, paint.height, null);
+
     }
     @Override
     public void on(Shift shift) {
@@ -40,16 +41,17 @@ public class SwingImageDisplay extends JPanel implements ImageDisplay {
         this.release = released != null ? released : Release.Null;
     }
 
-
-
     @Override
     public void clear() {
         this.paintQueue.clear();
     }
 
     @Override
-    public void paint(int offsetWidth, int offsetHeight, int width, int height, int shiftOffset, BufferedImage content) {
-        this.paintQueue.add(new Paint(offsetWidth, offsetHeight, width, height, shiftOffset,  content));
+    public void paint(int width, int height, int shiftOffset, BufferedImage content) {
+        Dimension contentSize = fitToResolution(width, height);
+        Dimension startOffset = offset(contentSize);
+        System.out.println("startOffset: " + startOffset);
+        this.paintQueue.add(new Paint(startOffset.width, startOffset.height, contentSize.width, contentSize.height, shiftOffset,  content));
         repaint();
     }
 
@@ -96,6 +98,33 @@ public class SwingImageDisplay extends JPanel implements ImageDisplay {
             @Override
             public void mouseMoved(MouseEvent e) {}
         };
+    }
+
+
+    private Dimension fitToResolution(int contentWidth, int contentHeight) {
+        Dimension contentSize = new Dimension(contentWidth, contentHeight);
+        return contentSize.scale(Math.min(
+                (double) getWidth() / contentWidth,
+                (double) getHeight() / contentHeight
+        ));
+    }
+
+    private Dimension offset(Dimension imageSize) {
+        return new Dimension(
+                (getWidth() - imageSize.width) / 2,
+                (getHeight() - imageSize.height) / 2
+        );
+    }
+
+    private record Dimension(int width, int height) {
+        public Dimension scale(double factor) {
+            return new Dimension((int) (width * factor), (int) (height * factor));
+        }
+
+        @Override
+        public String toString() {
+            return "( " + width + ", " + height + " )";
+        }
     }
 
 
