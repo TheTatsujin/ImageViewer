@@ -26,10 +26,7 @@ public class SwingImageDisplay extends JPanel implements ImageDisplay {
     public void paint(Graphics g) {
         g.setColor(Color.black);
         g.fillRect(0, 0, getWidth(), getHeight());
-
-        Paint paint = paintQueue.getFirst();
-        g.drawImage(paint.content, paint.offsetWidth + paint.shiftOffset, paint.offsetHeight, paint.width, paint.height, null);
-
+        paintContent(g, paintQueue.getFirst());
     }
     @Override
     public void on(Shift shift) {
@@ -48,10 +45,7 @@ public class SwingImageDisplay extends JPanel implements ImageDisplay {
 
     @Override
     public void paint(int width, int height, int shiftOffset, BufferedImage content) {
-        Dimension contentSize = fitToResolution(width, height);
-        Dimension startOffset = offset(contentSize);
-        System.out.println("startOffset: " + startOffset);
-        this.paintQueue.add(new Paint(startOffset.width, startOffset.height, contentSize.width, contentSize.height, shiftOffset,  content));
+        this.paintQueue.add(new Paint(0, 0, width, height, shiftOffset,  content));
         repaint();
     }
 
@@ -98,6 +92,12 @@ public class SwingImageDisplay extends JPanel implements ImageDisplay {
             @Override
             public void mouseMoved(MouseEvent e) {}
         };
+    }
+
+    private void paintContent(Graphics g, Paint paint) {
+        Dimension contentSize = fitToResolution(paint.width, paint.height());
+        Dimension startOffset = offset(contentSize);
+        g.drawImage(paint.content, startOffset.width + paint.shiftOffset, startOffset.height, contentSize.width, contentSize.height, null);
     }
 
 

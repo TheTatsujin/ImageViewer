@@ -7,7 +7,6 @@ import software.ulpgc.imageview.core.model.Image;
 import java.io.File;
 
 public class Main {
-
     public static final String root = "/home/lily/Pictures/";
     public static void main(String[] args) {
         MainFrame frame = new MainFrame();

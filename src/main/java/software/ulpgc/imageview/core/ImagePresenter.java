@@ -23,17 +23,17 @@ public class ImagePresenter {
 
     private void shiftEvent(int offset){
         imageDisplay.clear();
-        imageDisplay.paint(image.content().getHeight(), image.content().getHeight(), offset, image.content());
+        imageDisplay.paint(image.content().getWidth(), image.content().getHeight(), offset, image.content());
         if (offset > 0){
-            imageDisplay.paint(image.previous().content().getWidth(), image.previous().content().getWidth(), offset, image.previous().content());
+            imageDisplay.paint(image.previous().content().getWidth(), image.previous().content().getHeight(), offset, image.previous().content());
         }
         else
-            imageDisplay.paint(image.next().content().getWidth(), image.next().content().getWidth(), offset, image.next().content());
+            imageDisplay.paint(image.next().content().getWidth(), image.next().content().getHeight(), offset, image.next().content());
     }
 
     private void updateDisplay() {
         imageDisplay.clear();
-        imageDisplay.paint(image.content().getHeight(), image.content().getHeight(), 0, image.content());
+        imageDisplay.paint(image.content().getWidth(), image.content().getHeight(), 0, image.content());
     }
 
     public void show(Image image) {
