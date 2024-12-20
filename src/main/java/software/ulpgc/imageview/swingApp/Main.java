@@ -1,7 +1,6 @@
 package software.ulpgc.imageview.swingApp;
 
-import software.ulpgc.imageview.core.NextImageCommand;
-import software.ulpgc.imageview.core.PreviousImageCommand;
+import software.ulpgc.imageview.core.ImagePresenter;
 import software.ulpgc.imageview.core.io.FileImageLoader;
 import software.ulpgc.imageview.core.model.Image;
 
@@ -13,9 +12,9 @@ public class Main {
     public static void main(String[] args) {
         MainFrame frame = new MainFrame();
         Image image = new FileImageLoader(new File(root)).load();
-        frame.imageDisplay().show(image);
-        frame.put("<", new PreviousImageCommand(frame.imageDisplay()));
-        frame.put(">", new NextImageCommand(frame.imageDisplay()));
+
+        ImagePresenter presenter = new ImagePresenter(frame.imageDisplay());
+        presenter.show(image);
         frame.setVisible(true);
     }
 

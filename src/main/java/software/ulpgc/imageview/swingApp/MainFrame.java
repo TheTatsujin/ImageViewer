@@ -1,20 +1,15 @@
 package software.ulpgc.imageview.swingApp;
 
-import software.ulpgc.imageview.core.Command;
 import software.ulpgc.imageview.core.model.ImageDisplay;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainFrame extends JFrame {
     private ImageDisplay imageDisplay;
-    private final Map<String, Command> commands;
 
 
     public MainFrame() {
-        this.commands = new HashMap<>();
         setTitle("Image Viewer");
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -32,9 +27,7 @@ public class MainFrame extends JFrame {
     }
 
     private Component createButton(String label) {
-        JButton button = new JButton(label);
-        button.addActionListener(e -> commands.get(label).execute());
-        return button;
+        return new JButton(label);
     }
 
     private Component createImageDisplay() {
@@ -43,10 +36,6 @@ public class MainFrame extends JFrame {
         return display;
     }
 
-
-    public void put(String name, Command command) {
-        commands.put(name, command);
-    }
 
     public ImageDisplay imageDisplay() {
         return imageDisplay;

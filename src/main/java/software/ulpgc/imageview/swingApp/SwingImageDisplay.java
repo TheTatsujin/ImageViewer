@@ -1,60 +1,104 @@
 package software.ulpgc.imageview.swingApp;
 
-import software.ulpgc.imageview.core.model.Image;
 import software.ulpgc.imageview.core.model.ImageDisplay;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SwingImageDisplay extends JPanel implements ImageDisplay {
-    private Image image;
+    private final List<Paint> paintQueue = new ArrayList<>();
+    private Shift shift = Shift.Null;
+    private Release release = Release.Null;
+    private int initialOffset;
 
-    @Override
-    public void show(Image image) {
-        this.image = image;
-        this.repaint();
-    }
-
-    @Override
-    public Image getImage() {
-        return image;
+    public SwingImageDisplay() {
+        this.addMouseListener(mouseListener());
+        this.addMouseMotionListener(mouseMotionListener());
     }
 
     @Override
     public void paint(Graphics g) {
-        g.setColor(Color.BLACK);
+        g.setColor(Color.black);
         g.fillRect(0, 0, getWidth(), getHeight());
-        Dimension scaledImage = fitToResolution(image);
-        g.drawImage(
-                image.content(),
-                offset(scaledImage).width,
-                offset(scaledImage).height,
-                scaledImage.width,
-                scaledImage.height,
-                null
-        );
+
+        Paint paint = paintQueue.getFirst();
+        g.drawImage(paint.content, paint.offsetWidth + paint.shiftOffset, paint.offsetHeight, null);
+    }
+    @Override
+    public void on(Shift shift) {
+        this.shift = shift != null ? shift : Shift.Null;
     }
 
-    private Dimension fitToResolution(Image image) {
-        Dimension imageSize = new Dimension(image.content().getWidth(), image.content().getHeight());
-        return imageSize.scale(Math.min(
-                (double) this.getWidth() / imageSize.width(),
-                (double) this.getHeight() / imageSize.height()
-        ));
-    }
-
-    private Dimension offset(Dimension imageSize) {
-        return new Dimension(
-                (getWidth() - imageSize.width) / 2,
-                (getHeight() - imageSize.height) / 2
-        );
+    @Override
+    public void on(Release released) {
+        this.release = released != null ? released : Release.Null;
     }
 
 
-    private record Dimension(int width, int height) {
-        public Dimension scale(double factor) {
-            return new Dimension((int) (width * factor), (int) (height * factor));
-        }
+
+    @Override
+    public void clear() {
+        this.paintQueue.clear();
     }
+
+    @Override
+    public void paint(int offsetWidth, int offsetHeight, int width, int height, int shiftOffset, BufferedImage content) {
+        this.paintQueue.add(new Paint(offsetWidth, offsetHeight, width, height, shiftOffset,  content));
+        repaint();
+    }
+
+    @Override
+    public int width() {
+        return getWidth();
+    }
+
+    @Override
+    public int height() {
+        return getHeight();
+    }
+
+    private MouseListener mouseListener() {
+        return new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {}
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                initialOffset = e.getX();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                release.offset(e.getX() - initialOffset);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+
+            @Override
+            public void mouseExited(MouseEvent e) { }
+        };
+    }
+
+    private MouseMotionListener mouseMotionListener() {
+        return new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                shift.offset(e.getX() - initialOffset);
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {}
+        };
+    }
+
+
+    private record Paint(int offsetWidth, int offsetHeight, int width, int height, int shiftOffset, BufferedImage content) {}
 
 }
